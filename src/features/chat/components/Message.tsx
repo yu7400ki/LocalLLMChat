@@ -2,13 +2,14 @@ import React from "react";
 
 import { css, cx } from "@styled-system/css";
 
+import type { IMessage } from "../types/message";
+
 type Props = {
-  role: "User" | "Bot";
-  message: string;
+  message: IMessage;
   className?: string;
 };
 
-const Message: React.FC<Props> = ({ role, message, className }) => {
+const Message: React.FC<Props> = ({ message, className }) => {
   return (
     <div
       className={cx(
@@ -26,9 +27,9 @@ const Message: React.FC<Props> = ({ role, message, className }) => {
           mb: 1,
         })}
       >
-        {role}
+        {message.role}
       </span>
-      <p>{message}</p>
+      <p>{message.content}</p>
     </div>
   );
 };
