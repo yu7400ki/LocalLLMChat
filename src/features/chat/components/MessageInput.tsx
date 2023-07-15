@@ -39,12 +39,14 @@ const MessageInput: React.FC<Props> = ({ onSubmit, className, disabled }) => {
   }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (isDisabled) return;
     event.preventDefault();
     onSubmit(message);
     setMessage("");
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isDisabled) return;
     if (event.key === "Enter" && event.ctrlKey) {
       event.preventDefault();
       onSubmit(message);
@@ -125,8 +127,13 @@ const MessageInput: React.FC<Props> = ({ onSubmit, className, disabled }) => {
               outlineOffset: "1px",
             },
             _disabled: {
-              bg: "transparent",
+              bg: {
+                base: "transparent",
+                _hover: "transparent",
+                _active: "transparent",
+              },
               color: "slate.400",
+              cursor: "not-allowed",
             },
           })}
         >
