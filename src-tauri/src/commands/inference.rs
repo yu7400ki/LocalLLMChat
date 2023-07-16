@@ -1,6 +1,5 @@
 use super::load_model::LoadedModel;
 use llm::InferenceRequest;
-use std::io::Write;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -34,10 +33,9 @@ pub fn inference(
                 maximum_token_count: Some(50),
             },
             &mut Default::default(),
-            |t| {
-                if let llm::InferenceResponse::PromptToken(token)
-                | llm::InferenceResponse::InferredToken(token) = t
-                {
+            |t| match t {
+                llm::InferenceResponse::PromptToken(_) => Ok(llm::InferenceFeedback::Continue),
+                llm::InferenceResponse::InferredToken(token) => {
                     window
                         .emit(
                             "inference",
@@ -46,9 +44,10 @@ pub fn inference(
                             },
                         )
                         .unwrap();
-                    std::io::stdout().flush().unwrap();
+                    Ok(llm::InferenceFeedback::Continue)
                 }
-                Ok(llm::InferenceFeedback::Continue)
+                llm::InferenceResponse::EotToken => Ok(llm::InferenceFeedback::Halt),
+                _ => Ok(llm::InferenceFeedback::Continue),
             },
         )
         .map_err(|e| format!("Inference failed: {}", e))?;
