@@ -11,3 +11,7 @@ export async function loadModel(
 ) {
   return await invoke("load_model", { modelsDir, modelName, modelType });
 }
+
+export async function inference(prompt: string) {
+  return await invoke("inference", { prompt });
+}
