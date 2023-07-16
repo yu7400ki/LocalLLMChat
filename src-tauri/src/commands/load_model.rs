@@ -18,7 +18,7 @@ fn load<M: llm::KnownModel + 'static, P: AsRef<Path>>(
     Ok(Box::new(model))
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn load_model(
     loaded_model: tauri::State<LoadedModel>,
     models_dir: &Path,
