@@ -1,4 +1,5 @@
 use super::load_model::LoadedModel;
+use super::stop_inference::StopInference;
 use llm::InferenceRequest;
 
 #[derive(Clone, serde::Serialize)]
@@ -10,6 +11,7 @@ struct Payload {
 pub fn inference(
     window: tauri::Window,
     loaded_model: tauri::State<LoadedModel>,
+    stop_inference: tauri::State<StopInference>,
     prompt: &str,
 ) -> Result<(), String> {
     let mut session_guard = loaded_model.session.lock().unwrap();
@@ -22,6 +24,7 @@ pub fn inference(
         Some(model) => model,
         None => return Err("No model loaded".to_string()),
     };
+    print!("{}", prompt);
     session
         .infer::<std::convert::Infallible>(
             model.as_ref(),
@@ -30,26 +33,39 @@ pub fn inference(
                 prompt: prompt.into(),
                 parameters: &Default::default(),
                 play_back_previous_tokens: false,
-                maximum_token_count: Some(50),
+                maximum_token_count: Some(2048),
             },
             &mut Default::default(),
-            |t| match t {
-                llm::InferenceResponse::PromptToken(_) => Ok(llm::InferenceFeedback::Continue),
-                llm::InferenceResponse::InferredToken(token) => {
-                    window
-                        .emit(
-                            "inference",
-                            Payload {
-                                token: token.to_string(),
-                            },
-                        )
-                        .unwrap();
-                    Ok(llm::InferenceFeedback::Continue)
+            |t| {
+                {
+                    let stop_guard = stop_inference.0.lock().unwrap();
+                    if *stop_guard {
+                        return Ok(llm::InferenceFeedback::Halt);
+                    }
                 }
-                llm::InferenceResponse::EotToken => Ok(llm::InferenceFeedback::Halt),
-                _ => Ok(llm::InferenceFeedback::Continue),
+                match t {
+                    llm::InferenceResponse::PromptToken(token) => {
+                        println!("prompt: {}", token);
+                        Ok(llm::InferenceFeedback::Continue)
+                    }
+                    llm::InferenceResponse::InferredToken(token) => {
+                        println!("infer: {}", token);
+                        window
+                            .emit(
+                                "inference",
+                                Payload {
+                                    token: token.to_string(),
+                                },
+                            )
+                            .unwrap();
+                        Ok(llm::InferenceFeedback::Continue)
+                    }
+                    llm::InferenceResponse::EotToken => Ok(llm::InferenceFeedback::Halt),
+                    _ => Ok(llm::InferenceFeedback::Continue),
+                }
             },
         )
         .map_err(|e| format!("Inference failed: {}", e))?;
+    println!("done");
     Ok(())
 }
