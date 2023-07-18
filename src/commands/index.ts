@@ -15,3 +15,7 @@ export async function loadModel(
 export async function inference(prompt: string) {
   return await invoke("inference", { prompt });
 }
+
+export async function stopInference(isStop: boolean) {
+  return await invoke("stop_inference", { isStop });
+}
