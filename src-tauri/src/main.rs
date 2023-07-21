@@ -3,7 +3,9 @@
 
 mod commands;
 
-use commands::{get_models, inference, load_model, stop_inference, LoadedModel, StopInference};
+use commands::{
+    get_models, inference, load_model, open_models_dir, stop_inference, LoadedModel, StopInference,
+};
 use std::sync::Mutex;
 use tauri::Manager;
 
@@ -13,7 +15,8 @@ fn main() {
             get_models,
             load_model,
             inference,
-            stop_inference
+            stop_inference,
+            open_models_dir,
         ])
         .setup(|app| {
             let loaded_model = LoadedModel {

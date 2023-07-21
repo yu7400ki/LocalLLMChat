@@ -19,3 +19,7 @@ export async function inference(prompt: string): Promise<void> {
 export async function stopInference(isStop: boolean): Promise<void> {
   return await invoke("stop_inference", { isStop });
 }
+
+export async function openModelsDir(): Promise<void> {
+  return await invoke("open_models_dir");
+}
