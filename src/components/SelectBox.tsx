@@ -1,10 +1,13 @@
 import React, { useRef } from "react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { Root as Label } from "@radix-ui/react-label";
 import * as Select from "@radix-ui/react-select";
 import { css, cx } from "@styled-system/css";
 
 type Props = {
+  label: string;
+  error?: string;
   className?: string;
   placeholder?: string;
   value?: string;
@@ -15,6 +18,8 @@ type Props = {
 };
 
 const SelectBox: React.FC<Props> = ({
+  label,
+  error,
   className,
   placeholder,
   value,
@@ -26,9 +31,15 @@ const SelectBox: React.FC<Props> = ({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const labelStyle = css({
+    fontSize: "md",
+    lineHeight: "2.5rem",
+    height: "2.5rem",
+  });
   const triggerStyle = css({
     "position": "relative",
     "display": "flex",
+    "w": "100%",
     "alignItems": "center",
     "justifyContent": "center",
     "borderWidth": "0.125rem",
@@ -41,11 +52,16 @@ const SelectBox: React.FC<Props> = ({
     "gap": 5,
     "bg": "white",
     "userSelect": "none",
+    "mb": "2.5rem",
     "_focus": {
       borderColor: "orange.500",
     },
     "&[data-placeholder]": {
       color: "text.placeholder",
+    },
+    "_invalid": {
+      borderColor: "red.500",
+      mb: "0",
     },
   });
   const iconStyle = css({
@@ -84,12 +100,27 @@ const SelectBox: React.FC<Props> = ({
         contentRef.current?.style.setProperty("width", `${width}px`);
       }}
     >
-      <Select.Trigger className={cx(className, triggerStyle)} ref={triggerRef}>
-        <Select.Value placeholder={placeholder} />
-        <Select.Icon className={iconStyle}>
-          <ChevronDownIcon />
-        </Select.Icon>
-      </Select.Trigger>
+      <div className={className}>
+        <Label className={labelStyle}>{label}</Label>
+        <Select.Trigger className={triggerStyle} ref={triggerRef} data-invalid={!!error || void 0}>
+          <Select.Value placeholder={placeholder} />
+          <Select.Icon className={iconStyle}>
+            <ChevronDownIcon />
+          </Select.Icon>
+        </Select.Trigger>
+        {error && (
+          <p
+            className={cx(
+              labelStyle,
+              css({
+                color: "red.500",
+              }),
+            )}
+          >
+            {error}
+          </p>
+        )}
+      </div>
       <Select.Portal>
         <Select.Content className={contentStyle} position="popper" align="center" ref={contentRef}>
           <Select.ScrollUpButton className={scrollButtonStyle}>
