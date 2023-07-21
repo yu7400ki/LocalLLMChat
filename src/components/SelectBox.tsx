@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
@@ -23,6 +23,9 @@ const SelectBox: React.FC<Props> = ({
   required,
   children,
 }) => {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const triggerStyle = css({
     "position": "relative",
     "display": "flex",
@@ -37,8 +40,9 @@ const SelectBox: React.FC<Props> = ({
     "color": "inherit",
     "gap": 5,
     "bg": "white",
+    "userSelect": "none",
     "_focus": {
-      borderColor: "blue.500",
+      borderColor: "orange.500",
     },
     "&[data-placeholder]": {
       color: "text.placeholder",
@@ -55,6 +59,7 @@ const SelectBox: React.FC<Props> = ({
     rounded: "lg",
     borderColor: "slate.200",
     borderWidth: 1,
+    shadow: "sm",
   });
   const viewportStyle = css({
     p: 2,
@@ -63,23 +68,30 @@ const SelectBox: React.FC<Props> = ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    p: 2,
-    height: "2rem",
     bg: "white",
     color: "inherit",
-    cursor: "default",
+    py: 1,
   });
 
   return (
-    <Select.Root value={value} onValueChange={onChange} required={required} disabled={disabled}>
-      <Select.Trigger className={cx(className, triggerStyle)}>
+    <Select.Root
+      value={value}
+      onValueChange={onChange}
+      required={required}
+      disabled={disabled}
+      onOpenChange={() => {
+        const width = triggerRef.current?.offsetWidth;
+        contentRef.current?.style.setProperty("width", `${width}px`);
+      }}
+    >
+      <Select.Trigger className={cx(className, triggerStyle)} ref={triggerRef}>
         <Select.Value placeholder={placeholder} />
         <Select.Icon className={iconStyle}>
           <ChevronDownIcon />
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className={contentStyle}>
+        <Select.Content className={contentStyle} position="popper" align="center" ref={contentRef}>
           <Select.ScrollUpButton className={scrollButtonStyle}>
             <ChevronUpIcon />
           </Select.ScrollUpButton>

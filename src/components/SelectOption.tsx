@@ -10,21 +10,21 @@ type Props = {
   className?: string;
 };
 
-const SelectItem = forwardRef<HTMLDivElement, Props>(({ value, children, className }, ref) => {
+const SelectOption = forwardRef<HTMLDivElement, Props>(({ value, children, className }, ref) => {
   return (
     <Select.Item
       value={value}
       className={cx(
         className,
         css({
-          fontSize: "sm",
-          color: "inherit",
-          rounded: "md",
+          position: "relative",
           display: "flex",
           alignItems: "center",
-          py: 2,
+          py: 3,
           pl: 8,
-          position: "relative",
+          rounded: "md",
+          fontSize: "md",
+          color: "inherit",
           userSelect: "none",
           _highlighted: {
             outline: "none",
@@ -50,6 +50,6 @@ const SelectItem = forwardRef<HTMLDivElement, Props>(({ value, children, classNa
   );
 });
 
-SelectItem.displayName = "SelectItem";
+SelectOption.displayName = "SelectOption";
 
-export default React.memo(SelectItem);
+export default React.memo(SelectOption);
