@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-export async function getModels(modelsDir: string): Promise<string[]> {
-  return await invoke("get_models", { modelsDir });
+export async function getModels(): Promise<string[]> {
+  return await invoke("get_models");
 }
 
 export async function loadModel(

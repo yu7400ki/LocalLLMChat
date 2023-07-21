@@ -18,7 +18,6 @@ tauri-build = { version = "1.4.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.4.0", features = [] }
-regex = { version = "1.9" }
 llm = { git = "https://github.com/rustformers/llm", branch = "main" }
 rand = { version = "0.8.5" }
 

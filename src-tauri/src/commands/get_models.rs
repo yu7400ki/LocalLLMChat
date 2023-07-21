@@ -1,13 +1,18 @@
-use regex::Regex;
-use std::fs::read_dir;
-use std::path::Path;
+use std::fs::{create_dir, read_dir};
 
-fn check_file_exists<P: AsRef<Path>>(path: P, file: Regex) -> bool {
-    let path = path.as_ref();
-    if !path.is_dir() {
-        return false;
+#[tauri::command]
+pub fn get_models(app: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let mut ret = Vec::new();
+    let local_data_dir = app
+        .path_resolver()
+        .app_local_data_dir()
+        .ok_or("Failed to get local data dir".to_string())?;
+    let models_dir = local_data_dir.join("models");
+    if !models_dir.exists() {
+        create_dir(&models_dir).map_err(|e| e.to_string())?;
+        return Ok(ret);
     }
-    let dir = read_dir(path).unwrap();
+    let dir = read_dir(&models_dir).map_err(|e| e.to_string())?;
     for entry in dir {
         let entry = match entry {
             Ok(entry) => entry,
@@ -16,36 +21,9 @@ fn check_file_exists<P: AsRef<Path>>(path: P, file: Regex) -> bool {
         let path = entry.path();
         if path.is_file() {
             let file_name = path.file_name().unwrap().to_str().unwrap();
-            if file.is_match(file_name) {
-                return true;
-            }
-        }
-    }
-    false
-}
-
-#[tauri::command]
-pub fn get_models(models_dir: &str) -> Result<Vec<String>, String> {
-    let path = Path::new(models_dir);
-    if !path.is_dir() {
-        return Err(format!("{} is not a directory", models_dir));
-    };
-    let mut ret = Vec::new();
-    let dir = read_dir(models_dir).unwrap();
-    let config_file = Regex::new(r"^config\.json$").unwrap();
-    let ggml_file = Regex::new(r"^ggml-model.*\.bin$").unwrap();
-    for entry in dir {
-        let entry = match entry {
-            Ok(entry) => entry,
-            Err(_) => continue,
-        };
-        let path = entry.path();
-        if path.is_dir() {
-            if check_file_exists(&path, config_file.clone())
-                && check_file_exists(&path, ggml_file.clone())
-            {
-                let dir_name = path.file_name().unwrap().to_str().unwrap();
-                ret.push(dir_name.to_string());
+            if file_name.ends_with(".bin") {
+                let model_name = file_name.trim_end_matches(".bin");
+                ret.push(model_name.to_string());
             }
         }
     }
