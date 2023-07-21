@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { Root as Label } from "@radix-ui/react-label";
@@ -28,9 +28,6 @@ const SelectBox: React.FC<Props> = ({
   required,
   children,
 }) => {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
   const labelStyle = css({
     fontSize: "md",
     lineHeight: "2.5rem",
@@ -90,19 +87,10 @@ const SelectBox: React.FC<Props> = ({
   });
 
   return (
-    <Select.Root
-      value={value}
-      onValueChange={onChange}
-      required={required}
-      disabled={disabled}
-      onOpenChange={() => {
-        const width = triggerRef.current?.offsetWidth;
-        contentRef.current?.style.setProperty("width", `${width}px`);
-      }}
-    >
+    <Select.Root value={value} onValueChange={onChange} required={required} disabled={disabled}>
       <div className={className}>
         <Label className={labelStyle}>{label}</Label>
-        <Select.Trigger className={triggerStyle} ref={triggerRef} data-invalid={!!error || void 0}>
+        <Select.Trigger className={triggerStyle} data-invalid={!!error || void 0}>
           <Select.Value placeholder={placeholder} />
           <Select.Icon className={iconStyle}>
             <ChevronDownIcon />
@@ -122,7 +110,7 @@ const SelectBox: React.FC<Props> = ({
         )}
       </div>
       <Select.Portal>
-        <Select.Content className={contentStyle} position="popper" align="center" ref={contentRef}>
+        <Select.Content className={contentStyle}>
           <Select.ScrollUpButton className={scrollButtonStyle}>
             <ChevronUpIcon />
           </Select.ScrollUpButton>
