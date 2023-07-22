@@ -1,12 +1,12 @@
 use llm::models::{Bloom, Gpt2, GptJ, GptNeoX, Llama, Mpt};
-use llm::{InferenceSession, LoadError, Model, TokenizerSource};
+use llm::{LoadError, Model, TokenizerSource};
+use std::fs::create_dir;
 use std::path::Path;
 use std::sync::Mutex;
 
 pub struct LoadedModel {
     pub name: Mutex<Option<String>>,
     pub model: Mutex<Option<Box<dyn Model>>>,
-    pub session: Mutex<Option<InferenceSession>>,
 }
 
 fn load<M: llm::KnownModel + 'static, P: AsRef<Path>>(
@@ -20,8 +20,8 @@ fn load<M: llm::KnownModel + 'static, P: AsRef<Path>>(
 
 #[tauri::command(async)]
 pub fn load_model(
+    app: tauri::AppHandle,
     loaded_model: tauri::State<LoadedModel>,
-    models_dir: &Path,
     model_name: &str,
     model_type: &str,
 ) -> Result<bool, String> {
@@ -44,15 +44,21 @@ pub fn load_model(
         _ => return Err(format!("Unknown model type: {}", model_type)),
     };
 
-    let model_path = models_dir.join(model_name);
+    let local_data_dir = app
+        .path_resolver()
+        .app_local_data_dir()
+        .ok_or("Failed to get local data dir".to_string())?;
+    let models_dir = local_data_dir.join("models");
+    if !models_dir.exists() {
+        create_dir(&models_dir).map_err(|e| e.to_string())?;
+    }
+    let model_path = models_dir.join(format!("{}.bin", model_name));
     let model = load(model_path, Default::default());
 
     match model {
         Ok(model) => {
-            let session = model.start_session(Default::default());
             *loaded_model.name.lock().unwrap() = Some(model_name.to_string());
             *loaded_model.model.lock().unwrap() = Some(model);
-            *loaded_model.session.lock().unwrap() = Some(session);
         }
         Err(e) => return Err(format!("Failed to load model: {}", e)),
     }

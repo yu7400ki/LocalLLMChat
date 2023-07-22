@@ -6,6 +6,7 @@ mod commands;
 use commands::{
     get_models, inference, load_model, open_models_dir, stop_inference, LoadedModel, StopInference,
 };
+use std::fs::create_dir;
 use std::sync::Mutex;
 use tauri::Manager;
 
@@ -31,7 +32,6 @@ fn main() {
             let loaded_model = LoadedModel {
                 name: Mutex::new(None),
                 model: Mutex::new(None),
-                session: Mutex::new(None),
             };
             let stop_inference = StopInference(Mutex::new(true));
             app.manage(loaded_model);

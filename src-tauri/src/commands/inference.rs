@@ -14,16 +14,12 @@ pub fn inference(
     stop_inference: tauri::State<StopInference>,
     prompt: &str,
 ) -> Result<(), String> {
-    let mut session_guard = loaded_model.session.lock().unwrap();
-    let session = match session_guard.as_mut() {
-        Some(session) => session,
-        None => return Err("No model loaded".to_string()),
-    };
     let model_guard = loaded_model.model.lock().unwrap();
     let model = match model_guard.as_ref() {
         Some(model) => model,
         None => return Err("No model loaded".to_string()),
     };
+    let mut session = model.start_session(Default::default());
     print!("{}", prompt);
     session
         .infer::<std::convert::Infallible>(
