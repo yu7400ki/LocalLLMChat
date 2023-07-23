@@ -12,8 +12,8 @@ export async function loadModel(
   return await invoke("load_model", { modelsDir, modelName, modelType });
 }
 
-export async function inference(prompt: string): Promise<void> {
-  return await invoke("inference", { prompt });
+export async function infer(prompt: string): Promise<void> {
+  return await invoke("infer", { prompt });
 }
 
 export async function stopInference(isStop: boolean): Promise<void> {

@@ -4,7 +4,7 @@
 mod commands;
 
 use commands::{
-    get_models, inference, load_model, open_models_dir, stop_inference, LoadedModel, StopInference,
+    get_models, infer, load_model, open_models_dir, stop_inference, LoadedModel, StopInference,
 };
 use std::fs::create_dir;
 use std::sync::Mutex;
@@ -15,7 +15,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_models,
             load_model,
-            inference,
+            infer,
             stop_inference,
             open_models_dir,
         ])

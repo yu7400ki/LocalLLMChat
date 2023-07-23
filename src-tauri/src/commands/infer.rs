@@ -8,7 +8,7 @@ struct Payload {
 }
 
 #[tauri::command(async)]
-pub fn inference(
+pub fn infer(
     window: tauri::Window,
     loaded_model: tauri::State<LoadedModel>,
     stop_inference: tauri::State<StopInference>,
