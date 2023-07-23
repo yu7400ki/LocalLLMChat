@@ -68,8 +68,9 @@ const AddField: React.FC<Props> = ({
           "width": "100%",
           "fontSize": "md",
           "p": 3,
-          "outlineWidth": "thin",
-          "outlineStyle": "solid",
+          "borderWidth": "0.125rem",
+          "borderStyle": "solid",
+          "outline": "none",
           "rounded": "lg",
           "color": "inherit",
           "_placeholder": {
@@ -77,8 +78,7 @@ const AddField: React.FC<Props> = ({
             userSelect: "none",
           },
           "&:focus": {
-            outlineWidth: "0.125rem",
-            outlineColor: "orange.500",
+            borderColor: "orange.500",
           },
         })}
         autoComplete="off"
@@ -142,6 +142,7 @@ const AddedField: React.FC<AddedProps> = ({ onDelete, value }) => {
           bg: "transparent",
           rounded: "full",
           p: 1,
+          color: "inherit",
           _hover: {
             bg: "slate.200",
           },
