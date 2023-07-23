@@ -40,7 +40,7 @@ const Textarea: React.FC<Props> = ({ id, label, error, className, ...props }) =>
             color: "text.placeholder",
           },
           "&:focus": {
-            borderColor: "blue.500",
+            borderColor: "orange.500",
           },
           "_invalid": {
             borderColor: "red.500",
