@@ -36,6 +36,7 @@ const SelectBox: React.FC<Props> = ({
   const triggerStyle = css({
     "position": "relative",
     "display": "flex",
+    "h": "3.25rem",
     "w": "100%",
     "alignItems": "center",
     "justifyContent": "center",
