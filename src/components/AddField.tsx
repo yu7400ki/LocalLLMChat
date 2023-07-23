@@ -10,11 +10,12 @@ type Props = {
   id: string;
   label: string;
   placeholder?: string;
-  defaultValue?: string[];
-  onChanges?: (value: string[]) => void;
+  values: AddedValue[];
+  onPressEnter?: (value: string) => void;
+  onClickDelete?: (value: AddedValue) => void;
 } & JSX.IntrinsicElements["input"];
 
-type Value = {
+export type AddedValue = {
   id: string;
   value: string;
 };
@@ -23,29 +24,22 @@ const AddField: React.FC<Props> = ({
   id,
   label,
   placeholder,
-  defaultValue,
-  onChanges,
+  values,
+  onPressEnter,
+  onClickDelete,
   className,
   ...props
 }) => {
-  const [inputValue, setInputValue] = useState("");
-  const [values, setValues] = useState<Value[]>(
-    defaultValue?.map((value) => ({ id: uuid(), value })) || [],
-  );
-
+  const [value, setValue] = useState("");
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    setValue(event.target.value);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && inputValue) {
+    if (event.key === "Enter" && value) {
       event.preventDefault();
-      setValues((prev) => {
-        const newValue = { id: uuid(), value: inputValue };
-        onChanges?.([...prev, newValue].map((v) => v.value));
-        return [...prev, newValue];
-      });
-      setInputValue("");
+      onPressEnter?.(value);
+      setValue("");
     }
   };
 
@@ -83,7 +77,7 @@ const AddField: React.FC<Props> = ({
         })}
         autoComplete="off"
         placeholder={placeholder}
-        value={inputValue}
+        value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
@@ -101,7 +95,7 @@ const AddField: React.FC<Props> = ({
             key={value.id}
             value={value.value}
             onDelete={() => {
-              setValues(values.filter((v) => v.id !== value.id));
+              onClickDelete?.(value);
             }}
           />
         ))}
