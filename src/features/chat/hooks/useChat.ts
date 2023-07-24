@@ -119,7 +119,7 @@ export const useChat = (defaultConversion: IConversion) => {
   const submitMessage = (messageContent: string) => {
     if (inferring) return;
     const message: IMessage = {
-      id: uuid(conversion.id),
+      id: uuid(),
       content: messageContent,
       role: "User",
     };
