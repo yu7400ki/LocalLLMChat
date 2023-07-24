@@ -24,6 +24,7 @@
     "next": "13.4.9",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1",
     "typescript": "5.1.6",
     "uuid": "^9.0.0"
   },
