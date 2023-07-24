@@ -12,7 +12,7 @@ import Input from "@/components/Input";
 import SelectBox from "@/components/SelectBox";
 import SelectOption from "@/components/SelectOption";
 import Textarea from "@/components/Textarea";
-import { storage } from "@/utils/storage";
+import { conversionStore, settingsStore } from "@/store";
 import { uuid } from "@/utils/uuid";
 
 import { conversions as conversionsKey, settings as settingsKey } from "../constants/storageKey";
@@ -56,19 +56,23 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
   const [models, setModels] = useState<string[]>([]);
   const [settings, setSettings] = useState<Settings>(initialSettings);
 
-  const setSettingHelper = (key: keyof Settings) => (value: string | AddedValue[]) => {
+  const setSettingHelper = (key: keyof Settings) => async (value: string | AddedValue[]) => {
+    const savedSettings = (await settingsStore.get<SavedSettings>(settingsKey)) || {};
     setSettings((prev) => {
       let next = { ...prev, [key]: value };
-      const savedSettings = storage.getJSON<SavedSettings>(settingsKey) || {};
       if (key === "model") {
         const savedSetting = savedSettings[value as string];
         next = { ...initialSettings, ...savedSetting, model: value as string };
       }
       if (next.model) {
-        storage.setJSON<SavedSettings>(settingsKey, {
-          ...savedSettings,
-          [next.model]: next,
-        });
+        settingsStore
+          .set(settingsKey, {
+            ...savedSettings,
+            [next.model]: next,
+          })
+          .then(() => {
+            settingsStore.save();
+          });
       }
       return next;
     });
@@ -80,7 +84,7 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
     getModels().then((models) => setModels(models));
   }, []);
 
-  const onSubmit = (message: string) => {
+  const onSubmit = async (message: string) => {
     if (disabled) return;
     const modelSettings: IModelSettings = {
       architecture: settings.architecture as Architecture,
@@ -108,9 +112,10 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
       promptSettings,
       messages,
     };
-    const savedConversions = storage.getJSON<IConversion[]>(conversionsKey) || [];
-    storage.setJSON<IConversion[]>(conversionsKey, [conversion, ...savedConversions]);
-    router.push(`/chat/${conversion.id}`);
+    const savedConversions = (await conversionStore.get<IConversion[]>(conversionsKey)) || [];
+    await conversionStore.set(conversionsKey, [conversion, ...savedConversions]);
+    await conversionStore.save();
+    router.push(`/chat?id=${conversion.id}`);
   };
 
   return (
