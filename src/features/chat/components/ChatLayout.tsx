@@ -19,10 +19,7 @@ const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }
       className={cx(
         className,
         css({
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
+          position: "relative",
         }),
       )}
     >
@@ -42,11 +39,15 @@ const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }
       </div>
       <div
         className={css({
-          height: "5rem",
+          position: "absolute",
+          bottom: 0,
+          insetInlineStart: 0,
+          minHeight: "5rem",
           width: "100%",
           display: "grid",
           placeItems: "center",
-          px: 2,
+          p: 2,
+          bg: "white",
         })}
       >
         <MessageInput
