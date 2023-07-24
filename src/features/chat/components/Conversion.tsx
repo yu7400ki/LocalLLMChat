@@ -36,7 +36,7 @@ const Conversion: React.FC<Props> = ({ conversion, className }) => {
           <Message
             message={message}
             className={css({
-              maxWidth: "content",
+              maxWidth: "breakpoint-md",
               mx: "auto",
             })}
           />
