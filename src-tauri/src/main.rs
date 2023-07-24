@@ -25,9 +25,7 @@ fn main() {
                 .app_local_data_dir()
                 .ok_or("Failed to get local data dir")?;
             let models_dir = local_data_dir.join("models");
-            if !models_dir.exists() {
-                create_dir(&models_dir).map_err(|e| e.to_string())?;
-            }
+            std::fs::create_dir_all(&models_dir).map_err(|e| format!("Failed to create directory: {}", e))?;
 
             let loaded_model = LoadedModel {
                 name: Mutex::new(None),
