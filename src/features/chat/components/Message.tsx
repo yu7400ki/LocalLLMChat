@@ -29,7 +29,13 @@ const Message: React.FC<Props> = ({ message, className }) => {
       >
         {message.role}
       </span>
-      <p>{message.content}</p>
+      <p
+        className={css({
+          whiteSpace: "pre-wrap",
+        })}
+      >
+        {message.content}
+      </p>
     </div>
   );
 };
