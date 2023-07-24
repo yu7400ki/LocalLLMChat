@@ -5,9 +5,11 @@ import { listen } from "@tauri-apps/api/event";
 import { infer, loadModel, stopInference } from "@/commands";
 import { toPrompt } from "@/features/chat/utils/conversionProcessor";
 import { appendBotResponse } from "@/features/chat/utils/conversionProcessor";
+import { conversionStore } from "@/store";
 import { notNull } from "@/utils/evaluate";
 import { uuid } from "@/utils/uuid";
 
+import { conversions as conversionsKey } from "../constants/storageKey";
 import type { IConversion } from "../types/conversion";
 import type { IMessage } from "../types/message";
 
@@ -115,6 +117,15 @@ export const useChat = (defaultConversion: IConversion) => {
       inferStart(prompt);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    (async () => {
+      const saved = await conversionStore.get<IConversion[]>(conversionsKey);
+      const newConversions = [conversion, ...(saved?.filter((c) => c.id !== conversion.id) ?? [])];
+      await conversionStore.set(conversionsKey, newConversions);
+      await conversionStore.save();
+    })();
+  }, [conversion]);
 
   const submitMessage = (messageContent: string) => {
     if (inferring) return;
