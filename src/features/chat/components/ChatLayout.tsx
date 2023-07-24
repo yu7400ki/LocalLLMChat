@@ -46,6 +46,7 @@ const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }
           width: "100%",
           display: "grid",
           placeItems: "center",
+          px: 2,
         })}
       >
         <MessageInput

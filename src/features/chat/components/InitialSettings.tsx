@@ -122,6 +122,7 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
             maxWidth: "breakpoint-md",
             mx: "auto",
             py: 4,
+            px: 2,
           }),
         )}
       >
