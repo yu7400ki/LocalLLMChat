@@ -84,6 +84,7 @@ export const useChat = (defaultConversion: IConversion) => {
     setup();
     return () => {
       unlisten?.();
+      stopInference(true);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
