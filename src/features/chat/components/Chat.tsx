@@ -1,9 +1,11 @@
 import React from "react";
 
+import { Close } from "@radix-ui/react-dialog";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { css } from "@styled-system/css";
 
 import Dialog from "@/components/Dialog";
+import button from "@/recipes/button";
 
 import { useChat } from "../hooks/useChat";
 import { IConversion } from "../types/conversion";
@@ -32,14 +34,26 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
       <Conversion conversion={conversion} />
       <Dialog
         open={error !== null}
-        onClose={clearError}
         title={<ErrorWithIcon>Inference Error</ErrorWithIcon>}
         description={error}
         className={css({
           w: "90%",
           maxW: "xl",
         })}
-      />
+      >
+        <div
+          className={css({
+            display: "flex",
+            justifyContent: "flex-end",
+          })}
+        >
+          <Close asChild>
+            <button onClick={clearError} className={button({ visual: "solid" })}>
+              閉じる
+            </button>
+          </Close>
+        </div>
+      </Dialog>
     </ChatLayout>
   );
 };
