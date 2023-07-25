@@ -46,6 +46,7 @@ export const useChat = (defaultConversion: IConversion) => {
   const [conversion, setConversion] = useState<IConversion>(defaultConversion);
   const [inferring, setInferring] = useState<boolean>(false);
   const [buffer, setBuffer] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let unlisten: (() => void) | null = null;
@@ -100,7 +101,14 @@ export const useChat = (defaultConversion: IConversion) => {
         console.log("inference done");
       })
       .catch((err) => {
-        console.error(err);
+        console.error(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else if (typeof err === "string") {
+          setError(err);
+        } else {
+          setError("Unknown error");
+        }
       })
       .finally(() => {
         setBuffer("");
@@ -143,9 +151,15 @@ export const useChat = (defaultConversion: IConversion) => {
     inferStart(prompt);
   };
 
+  const clearError = () => {
+    setError(null);
+  };
+
   return {
     conversion,
     inferring,
     submitMessage,
+    error,
+    clearError,
   };
 };
