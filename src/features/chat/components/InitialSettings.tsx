@@ -56,25 +56,32 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
   const [models, setModels] = useState<string[]>([]);
   const [settings, setSettings] = useState<Settings>(initialSettings);
 
-  const setSettingHelper = (key: keyof Settings) => async (value: string | AddedValue[]) => {
-    const savedSettings = (await settingsStore.get<SavedSettings>(settingsKey)) || {};
+  const setSettingHelper = (key: keyof Settings) => (value: string | AddedValue[]) => {
     setSettings((prev) => {
       let next = { ...prev, [key]: value };
-      if (key === "model") {
-        const savedSetting = savedSettings[value as string];
-        next = { ...initialSettings, ...savedSetting, model: value as string };
-      }
-      if (next.model) {
+      if (next.model !== undefined) {
+        const model = next.model;
         settingsStore
-          .set(settingsKey, {
-            ...savedSettings,
-            [next.model]: next,
+          .get<SavedSettings>(settingsKey)
+          .then((savedSettings) => {
+            return settingsStore.set(settingsKey, {
+              ...savedSettings,
+              [model]: next,
+            });
           })
           .then(() => {
             settingsStore.save();
           });
       }
       return next;
+    });
+  };
+
+  const loadSettings = async (model: string) => {
+    const savedSettings = (await settingsStore.get<SavedSettings>(settingsKey)) || {};
+    const savedSetting = savedSettings[model] || initialSettings;
+    setSettings((prev) => {
+      return { ...prev, ...savedSetting, model };
     });
   };
 
@@ -163,7 +170,7 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
             })}
             error={settings.model === undefined ? "required" : undefined}
             value={settings.model}
-            onChange={setSettingHelper("model")}
+            onChange={loadSettings}
           >
             {models.map((model) => (
               <SelectOption key={model} value={model}>
