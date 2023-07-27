@@ -12,6 +12,7 @@ import { useChat } from "../hooks/useChat";
 import { IConversion } from "../types/conversion";
 import ChatLayout from "./ChatLayout";
 import Conversion from "./Conversion";
+import InferenceController from "./InferenceController";
 
 type Props = {
   defaultConversion: IConversion;
@@ -28,7 +29,8 @@ const ErrorWithIcon: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 };
 
 const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
-  const { inferring, submitMessage, conversion, error, clearError } = useChat(defaultConversion);
+  const { inferring, submitMessage, conversion, error, clearError, stop, reInfer, continueInfer } =
+    useChat(defaultConversion);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const shouldScrollToBottom = (() => {
@@ -45,7 +47,21 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
   }, [conversion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <ChatLayout className={className} onSubmit={submitMessage} disabled={inferring}>
+    <ChatLayout
+      className={className}
+      onSubmit={submitMessage}
+      disabled={inferring}
+      inferenceController={
+        <InferenceController
+          stopInference={inferring}
+          onStopInference={stop}
+          reInference={!inferring}
+          onReInference={reInfer}
+          continue={!inferring}
+          onContinue={continueInfer}
+        />
+      }
+    >
       <ScrollArea
         className={css({
           height: "100%",
