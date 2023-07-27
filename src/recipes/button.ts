@@ -6,10 +6,6 @@ const button = cva({
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    rounded: "md",
-    fontSize: "md",
-    px: 4,
-    py: 2,
     transitionDuration: "0.1s",
     transitionTimingFunction: "ease-in-out",
     _focusVisible: {
@@ -48,9 +44,24 @@ const button = cva({
         transitionProperty: "color",
       },
     },
+    size: {
+      sm: {
+        rounded: "sm",
+        fontSize: "sm",
+        px: 2.5,
+        py: 1.5,
+      },
+      md: {
+        rounded: "md",
+        fontSize: "md",
+        px: 4,
+        py: 2,
+      },
+    },
   },
   defaultVariants: {
     visual: "solid",
+    size: "md",
   },
 });
 
