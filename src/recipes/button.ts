@@ -32,7 +32,7 @@ const button = cva({
       },
       outline: {
         bg: {
-          base: "transparent",
+          base: "white",
           _hover: "orange.50",
           _active: "orange.50",
         },
