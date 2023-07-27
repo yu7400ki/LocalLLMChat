@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Close } from "@radix-ui/react-dialog";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
@@ -29,6 +29,20 @@ const ErrorWithIcon: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
 const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
   const { inferring, submitMessage, conversion, error, clearError } = useChat(defaultConversion);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const shouldScrollToBottom = (() => {
+    if (!scrollAreaRef.current) return false;
+    const { scrollHeight, scrollTop, clientHeight } = scrollAreaRef.current;
+    return scrollHeight - scrollTop === clientHeight;
+  })();
+
+  useEffect(() => {
+    if (!scrollAreaRef.current) return;
+    if (shouldScrollToBottom) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [conversion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ChatLayout className={className} onSubmit={submitMessage} disabled={inferring}>
@@ -36,6 +50,7 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
         className={css({
           height: "100%",
         })}
+        ref={scrollAreaRef}
       >
         <Conversion conversion={conversion} />
       </ScrollArea>
