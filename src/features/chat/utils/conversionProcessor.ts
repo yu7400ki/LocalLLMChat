@@ -49,3 +49,10 @@ export const appendBotResponse = (conversion: IConversion, response: string): IC
     ],
   };
 };
+
+export const removeSuffix = (str: string, suffix: string) => {
+  if (str.endsWith(suffix)) {
+    return str.slice(0, -suffix.length);
+  }
+  return str;
+};
