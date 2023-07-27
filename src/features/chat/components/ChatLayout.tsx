@@ -11,9 +11,16 @@ type Props = {
   children?: React.ReactNode;
   onSubmit: (message: string) => void;
   disabled?: boolean;
+  inferenceController?: React.ReactNode;
 };
 
-const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }) => {
+const ChatLayout: React.FC<Props> = ({
+  className,
+  children,
+  onSubmit,
+  disabled,
+  inferenceController,
+}) => {
   return (
     <div
       className={cx(
@@ -51,7 +58,9 @@ const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }
             width: "100%",
             maxWidth: "breakpoint-md",
           })}
-        />
+        >
+          {inferenceController}
+        </MessageInput>
       </div>
     </div>
   );
