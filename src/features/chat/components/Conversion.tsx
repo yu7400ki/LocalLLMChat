@@ -42,6 +42,12 @@ const Conversion: React.FC<Props> = ({ conversion, className }) => {
           />
         </div>
       ))}
+      <div
+        className={css({
+          width: "100%",
+          height: "3rem",
+        })}
+      />
     </div>
   );
 };
