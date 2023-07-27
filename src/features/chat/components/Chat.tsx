@@ -5,6 +5,7 @@ import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { css } from "@styled-system/css";
 
 import Dialog from "@/components/Dialog";
+import ScrollArea from "@/components/ScrollArea";
 import button from "@/recipes/button";
 
 import { useChat } from "../hooks/useChat";
@@ -31,7 +32,13 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
 
   return (
     <ChatLayout className={className} onSubmit={submitMessage} disabled={inferring}>
-      <Conversion conversion={conversion} />
+      <ScrollArea
+        className={css({
+          height: "100%",
+        })}
+      >
+        <Conversion conversion={conversion} />
+      </ScrollArea>
       <Dialog
         open={error !== null}
         title={<ErrorWithIcon>Inference Error</ErrorWithIcon>}
