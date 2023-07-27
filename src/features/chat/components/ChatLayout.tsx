@@ -29,13 +29,7 @@ const ChatLayout: React.FC<Props> = ({ className, children, onSubmit, disabled }
           height: "calc(100% - 5rem)",
         })}
       >
-        <ScrollArea
-          className={css({
-            height: "100%",
-          })}
-        >
-          {children}
-        </ScrollArea>
+        {children}
       </div>
       <div
         className={css({
