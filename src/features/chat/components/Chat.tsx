@@ -36,7 +36,7 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
   const shouldScrollToBottom = (() => {
     if (!scrollAreaRef.current) return false;
     const { scrollHeight, scrollTop, clientHeight } = scrollAreaRef.current;
-    return scrollHeight - scrollTop === clientHeight;
+    return scrollHeight - scrollTop - clientHeight < 10;
   })();
 
   useEffect(() => {
