@@ -25,6 +25,7 @@ const Message: React.FC<Props> = ({ message, className }) => {
         className={css({
           fontWeight: "extrabold",
           mb: 1,
+          userSelect: "none",
         })}
       >
         {message.role}
