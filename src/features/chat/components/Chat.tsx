@@ -44,7 +44,7 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
     if (shouldScrollToBottom) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [conversion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [conversion.messages]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ChatLayout
