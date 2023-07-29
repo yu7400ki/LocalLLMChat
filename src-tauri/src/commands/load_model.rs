@@ -1,3 +1,4 @@
+use crate::shared::{Error, Result};
 use llm::models::{Bloom, Gpt2, GptJ, GptNeoX, Llama, Mpt};
 use llm::{LoadError, Model, TokenizerSource};
 use std::fs::create_dir;
@@ -12,7 +13,7 @@ pub struct LoadedModel {
 fn load<M: llm::KnownModel + 'static, P: AsRef<Path>>(
     path: P,
     params: llm::ModelParameters,
-) -> Result<Box<dyn Model>, LoadError> {
+) -> std::result::Result<Box<dyn Model>, LoadError> {
     let path = path.as_ref();
     let model = llm::load::<M>(path, TokenizerSource::Embedded, params, |_| {})?;
     Ok(Box::new(model))
@@ -24,7 +25,9 @@ pub fn load_model(
     loaded_model: tauri::State<LoadedModel>,
     model_name: &str,
     model_type: &str,
-) -> Result<bool, String> {
+) -> Result<bool> {
+    let error = "Model Load Error";
+
     {
         let loaded_model_name = loaded_model.name.lock().unwrap();
         if let Some(loaded_model_name) = &*loaded_model_name {
@@ -41,16 +44,24 @@ pub fn load_model(
         "gptneox" => load::<GptNeoX, _>,
         "llama" => load::<Llama, _>,
         "mpt" => load::<Mpt, _>,
-        _ => return Err(format!("Unknown model type: {}", model_type)),
+        _ => {
+            return Err(Error::new(
+                error,
+                format!("Unknown model type: {}", model_type),
+            ))
+        }
     };
 
     let local_data_dir = app
         .path_resolver()
         .app_local_data_dir()
-        .ok_or("Failed to get local data dir".to_string())?;
+        .ok_or(Error::new(
+            error,
+            "Failed to get local data dir".to_string(),
+        ))?;
     let models_dir = local_data_dir.join("models");
     if !models_dir.exists() {
-        create_dir(&models_dir).map_err(|e| e.to_string())?;
+        create_dir(&models_dir).map_err(|e| Error::new(error, e.to_string()))?;
     }
     let model_path = models_dir.join(format!("{}.bin", model_name));
     let model = load(model_path, Default::default());
@@ -60,7 +71,7 @@ pub fn load_model(
             *loaded_model.name.lock().unwrap() = Some(model_name.to_string());
             *loaded_model.model.lock().unwrap() = Some(model);
         }
-        Err(e) => return Err(format!("Failed to load model: {}", e)),
+        Err(e) => return Err(Error::new(error, e.to_string())),
     }
 
     Ok(true)

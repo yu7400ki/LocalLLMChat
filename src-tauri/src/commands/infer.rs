@@ -1,5 +1,6 @@
 use super::load_model::LoadedModel;
 use super::stop_inference::StopInference;
+use crate::shared::{Error, Result};
 use llm::InferenceRequest;
 
 #[derive(Clone, serde::Serialize)]
@@ -13,11 +14,13 @@ pub fn infer(
     loaded_model: tauri::State<LoadedModel>,
     stop_inference: tauri::State<StopInference>,
     prompt: &str,
-) -> Result<(), String> {
+) -> Result<()> {
+    let error = "Inference Error";
+
     let model_guard = loaded_model.model.lock().unwrap();
     let model = match model_guard.as_ref() {
         Some(model) => model,
-        None => return Err("No model loaded".to_string()),
+        None => return Err(Error::new(error, "No model loaded")),
     };
     let mut session = model.start_session(Default::default());
     print!("{}", prompt);
@@ -61,7 +64,7 @@ pub fn infer(
                 }
             },
         )
-        .map_err(|e| format!("Inference failed: {}", e))?;
+        .map_err(|e| Error::new(error, format!("{}", e)))?;
     println!("done");
     Ok(())
 }
