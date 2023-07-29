@@ -81,8 +81,8 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
       </ScrollArea>
       <Dialog
         open={error !== null}
-        title={<ErrorWithIcon>Inference Error</ErrorWithIcon>}
-        description={error}
+        title={<ErrorWithIcon>{error?.error}</ErrorWithIcon>}
+        description={error?.message}
         className={css({
           w: "90%",
           maxW: "xl",
