@@ -6,8 +6,8 @@ import { infer, loadModel, stopInference } from "@/commands";
 import { toPrompt } from "@/features/chat/utils/conversionProcessor";
 import { appendBotResponse, removeSuffix } from "@/features/chat/utils/conversionProcessor";
 import { conversionStore } from "@/store";
-import { tauriErrorValidator } from "@/types/tauri_error";
 import type { TauriError } from "@/types/tauri_error";
+import { toTauriError } from "@/utils/error";
 import { notNull } from "@/utils/evaluate";
 import { uuid } from "@/utils/uuid";
 
@@ -49,6 +49,10 @@ export const useChat = (defaultConversion: IConversion) => {
   const [inferring, setInferring] = useState<boolean>(false);
   const [buffer, setBuffer] = useState<string>("");
   const [error, setError] = useState<TauriError | null>(null);
+
+  const setTauriError = (error: unknown) => {
+    setError(toTauriError(error));
+  };
 
   useEffect(() => {
     let unlisten: (() => void) | null = null;
@@ -105,19 +109,7 @@ export const useChat = (defaultConversion: IConversion) => {
       })
       .catch((err) => {
         console.error(err.message);
-        if (tauriErrorValidator(err)) {
-          setError(err);
-        } else if (err instanceof Error) {
-          setError({
-            error: "Unknown Error",
-            message: err.message,
-          });
-        } else {
-          setError({
-            error: "Unknown Error",
-            message: "an unknown error occurred",
-          });
-        }
+        setTauriError(err);
       })
       .finally(() => {
         setBuffer("");
