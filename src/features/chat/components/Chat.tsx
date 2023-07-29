@@ -1,12 +1,9 @@
 import React, { useEffect, useRef } from "react";
 
-import { Close } from "@radix-ui/react-dialog";
-import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { css } from "@styled-system/css";
 
-import Dialog from "@/components/Dialog";
+import ErrorDialog from "@/components/ErrorDialog";
 import ScrollArea from "@/components/ScrollArea";
-import button from "@/recipes/button";
 
 import { useChat } from "../hooks/useChat";
 import { IConversion } from "../types/conversion";
@@ -19,19 +16,12 @@ type Props = {
   className?: string;
 };
 
-const ErrorWithIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <div className={css({ display: "flex", alignItems: "center", gap: 2 })}>
-      <CrossCircledIcon width={"1.5rem"} height={"1.5rem"} className={css({ color: "red.500" })} />
-      {children}
-    </div>
-  );
-};
-
 const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
   const { inferring, submitMessage, conversion, error, clearError, stop, reInfer, continueInfer } =
     useChat(defaultConversion);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  console.log(error);
 
   const { shouldScrollToBottom, scrollHeight } = (() => {
     if (!scrollAreaRef.current)
@@ -79,28 +69,12 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
       >
         <Conversion conversion={conversion} />
       </ScrollArea>
-      <Dialog
+      <ErrorDialog
         open={error !== null}
-        title={<ErrorWithIcon>{error?.error}</ErrorWithIcon>}
-        description={error?.message}
-        className={css({
-          w: "90%",
-          maxW: "xl",
-        })}
-      >
-        <div
-          className={css({
-            display: "flex",
-            justifyContent: "flex-end",
-          })}
-        >
-          <Close asChild>
-            <button onClick={clearError} className={button({ visual: "solid" })}>
-              閉じる
-            </button>
-          </Close>
-        </div>
-      </Dialog>
+        error={error?.error!}
+        description={error?.message!}
+        onClose={clearError}
+      />
     </ChatLayout>
   );
 };
