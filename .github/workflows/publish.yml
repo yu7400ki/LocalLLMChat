@@ -35,13 +35,16 @@ jobs:
         run: pnpm install # change this to npm or pnpm depending on which one you use
       - name: get sha
         id: get_sha
-        run: echo "${{ github.sha }}" | cut -c1-7
+        run: |
+          sha=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "sha=$sha"
+          echo "::set-output name=value::$sha"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: release-${{ steps.get_sha.outputs.stdout }}
-          releaseName: "Release ${{ steps.get_sha.outputs.stdout }}"
+          tagName: release-${{ steps.get_sha.outputs.value }}
+          releaseName: "Release ${{ steps.get_sha.outputs.value }}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
