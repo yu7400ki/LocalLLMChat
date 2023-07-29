@@ -8,12 +8,15 @@ import { css, cx } from "@styled-system/css";
 import { getModels, openModelsDir } from "@/commands";
 import AddField, { AddedValue } from "@/components/AddField";
 import Button from "@/components/Button";
+import ErrorDialog from "@/components/ErrorDialog";
 import Input from "@/components/Input";
 import ScrollArea from "@/components/ScrollArea";
 import SelectBox from "@/components/SelectBox";
 import SelectOption from "@/components/SelectOption";
 import Textarea from "@/components/Textarea";
 import { conversionStore, settingsStore } from "@/store";
+import type { TauriError } from "@/types/tauri_error";
+import { toTauriError } from "@/utils/error";
 import { uuid } from "@/utils/uuid";
 
 import { conversions as conversionsKey, settings as settingsKey } from "../constants/storageKey";
@@ -56,6 +59,12 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
   const router = useRouter();
   const [models, setModels] = useState<string[]>([]);
   const [settings, setSettings] = useState<Settings>(initialSettings);
+  const [error, setError] = useState<TauriError | null>(null);
+
+  const setTauriError = (e: unknown) => {
+    const error = toTauriError(e);
+    setError(error);
+  };
 
   const setSettingHelper = (key: keyof Settings) => (value: string | AddedValue[]) => {
     setSettings((prev) => {
@@ -89,7 +98,9 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
   const disabled = settings.architecture === undefined || settings.model === undefined;
 
   useEffect(() => {
-    getModels().then((models) => setModels(models));
+    getModels()
+      .then((models) => setModels(models))
+      .catch(setTauriError);
   }, []);
 
   const onSubmit = async (message: string) => {
@@ -188,7 +199,11 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
               className={css({
                 aspectRatio: "1/1",
               })}
-              onClick={() => getModels().then((models) => setModels(models))}
+              onClick={() =>
+                getModels()
+                  .then((models) => setModels(models))
+                  .catch(setTauriError)
+              }
             >
               <ReloadIcon />
             </Button>
@@ -196,7 +211,7 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
               className={css({
                 aspectRatio: "1/1",
               })}
-              onClick={() => openModelsDir()}
+              onClick={() => openModelsDir().catch(setTauriError)}
             >
               <UploadIcon />
             </Button>
@@ -286,6 +301,12 @@ const InitialSettings: React.FC<Props> = ({ className }) => {
           </div>
         </div>
       </ScrollArea>
+      <ErrorDialog
+        open={error !== null}
+        error={error?.error!}
+        description={error?.message!}
+        onClose={() => setError(null)}
+      />
     </ChatLayout>
   );
 };
