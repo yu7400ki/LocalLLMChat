@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+mod shared;
 
 use commands::{
     get_models, infer, load_model, open_models_dir, stop_inference, LoadedModel, StopInference,
