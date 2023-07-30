@@ -64,7 +64,6 @@ const Message: React.FC<Props> = ({ message, className, onEdit }) => {
           }}
           onCancel={() => {
             setIsEditing(false);
-            console.log(snapshot.current);
             snapshot.current = null;
           }}
         />

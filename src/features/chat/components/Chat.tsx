@@ -30,8 +30,6 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
   } = useChat(defaultConversion);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  console.log(error);
-
   const { shouldScrollToBottom, scrollHeight } = (() => {
     if (!scrollAreaRef.current)
       return {
