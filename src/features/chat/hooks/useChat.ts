@@ -188,6 +188,15 @@ export const useChat = (defaultConversion: IConversion) => {
     inferStart(prompt);
   };
 
+  const editMessage = (newMessage: IMessage) => {
+    setConversion((prevConversion) => {
+      const messages = prevConversion.messages.map((message) =>
+        message.id === newMessage.id ? newMessage : message,
+      );
+      return { ...prevConversion, messages };
+    });
+  };
+
   return {
     conversion,
     inferring,
@@ -197,5 +206,6 @@ export const useChat = (defaultConversion: IConversion) => {
     stop,
     reInfer,
     continueInfer,
+    editMessage,
   };
 };

@@ -17,11 +17,18 @@ type Props = {
 };
 
 const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
-  const { inferring, submitMessage, conversion, error, clearError, stop, reInfer, continueInfer } =
-    useChat(defaultConversion);
+  const {
+    inferring,
+    submitMessage,
+    conversion,
+    error,
+    clearError,
+    stop,
+    reInfer,
+    continueInfer,
+    editMessage,
+  } = useChat(defaultConversion);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  console.log(error);
 
   const { shouldScrollToBottom, scrollHeight } = (() => {
     if (!scrollAreaRef.current)
@@ -67,7 +74,7 @@ const Chat: React.FC<Props> = ({ defaultConversion, className }) => {
         })}
         ref={scrollAreaRef}
       >
-        <Conversion conversion={conversion} />
+        <Conversion conversion={conversion} onEditMessage={editMessage} />
       </ScrollArea>
       <ErrorDialog
         open={error !== null}
