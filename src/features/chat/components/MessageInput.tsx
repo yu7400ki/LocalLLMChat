@@ -87,7 +87,7 @@ const MessageInput: React.FC<Props> = ({ onSubmit, className, disabled, children
             pr: 0,
             minHeight: "calc(1rem * 1.5)",
             height: "calc(1rem * 1.5)",
-            maxHeight: "10rem",
+            maxHeight: "14rem",
             outline: "none",
             resize: "none",
             fontSize: "1rem",
