@@ -34,6 +34,7 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install # change this to npm or pnpm depending on which one you use
       - name: get sha
+        shell: bash
         id: get_sha
         run: |
           sha=$(echo "${{ github.sha }}" | cut -c1-7)
